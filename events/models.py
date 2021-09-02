@@ -6,9 +6,6 @@ from taggit.managers import TaggableManager
 
 
 # Create your models here.
-class Time(TimeFramedModel):
-    all_day = models.BooleanField(default=False)
-
 
 class Location(models.Model):
     venue = models.CharField(max_length=20)
@@ -30,10 +27,13 @@ class Event(TimeStampedModel):
     name = models.CharField(max_length=40)
     description = models.TextField(max_length=120)
     place = models.ForeignKey(Location, on_delete=models.PROTECT)
-    time = models.ForeignKey(Time, on_delete=models.PROTECT)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = TaggableManager(blank=True)
 
     def __str__(self):
         return self.name
+
+class Time(TimeFramedModel):
+    all_day = models.BooleanField(default=False)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True)
