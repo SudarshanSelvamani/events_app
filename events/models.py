@@ -26,6 +26,7 @@ class Category(models.Model):
 class Event(TimeStampedModel):
     name = models.CharField(max_length=40)
     description = models.TextField(max_length=120)
+    image = models.ImageField(upload_to='images', null = True)
     place = models.ForeignKey(Location, on_delete=models.PROTECT)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
