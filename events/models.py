@@ -7,6 +7,7 @@ from taggit.managers import TaggableManager
 
 # Create your models here.
 
+
 class Location(models.Model):
     venue = models.CharField(max_length=20)
     address = models.TextField(max_length=120, null=True)
@@ -26,7 +27,7 @@ class Category(models.Model):
 class Event(TimeStampedModel):
     name = models.CharField(max_length=40)
     description = models.TextField(max_length=120)
-    image = models.ImageField(upload_to='images', null = True)
+    image = models.ImageField(upload_to="images", null=True, blank=True)
     place = models.ForeignKey(Location, on_delete=models.PROTECT)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -34,6 +35,7 @@ class Event(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
 
 class Time(TimeFramedModel):
     all_day = models.BooleanField(default=False)
