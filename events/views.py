@@ -1,7 +1,8 @@
+from events.models import Event
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls.base import reverse
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, DeleteView
 
 
 from .forms import EventForm, EventFormSet, EventPlaceForm, EventCategoryForm
@@ -70,3 +71,10 @@ def category_create_popup(request):
     else:
         form = EventCategoryForm()
         return render(request, "events/create_category.html", {"form": form})
+
+
+class EventDeleteView(DeleteView):
+    model = Event
+    template_name = "events/delete_event.html"
+    context_object_name = "event"
+    success_url = "/"

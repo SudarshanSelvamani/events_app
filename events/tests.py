@@ -100,3 +100,34 @@ class TestEventCreateView(TestCase, Mixin):
             },
         )
         self.assertEqual(Event.objects.last().name, "I am a test events")
+
+
+class TestProjectDeleteView(TestCase, Mixin):
+    def setUp(self):
+        event_place = self.create_place(
+            venue="lollipop", address="Eeifel tower", is_online=False
+        )
+        category = self.create_category(category_name="funny")
+        user = self.create_user()
+
+        self.event = self.create_event(
+            description="Testing is good",
+            place=event_place,
+            category=category,
+            user=user,
+            event_name="test event",
+        )
+
+    def test_page_serve_successful(self):
+        url = reverse("delete_event", kwargs={"pk": self.event.pk})
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+
+    def test_url_resolve_event_delete_object(self):
+        view = resolve("/events/1/delete")
+        self.assertEquals(view.func.view_class, views.EventDeleteView)
+
+    def test_presence_of_csrf(self):
+        url = reverse("delete_event", args=[self.event.pk])
+        response = self.client.get(url)
+        self.assertContains(response, "csrfmiddlewaretoken")
