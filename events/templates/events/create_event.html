@@ -88,6 +88,9 @@ function closePopup(win, newID, newRepr, id) {
     {{ event_formset.management_form }}
     <div id ="time_form_list">
                 {% for form in event_formset %}
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
                 <div class = "time_form" class="sm:grid sm:grid-cols-3 sm:gap-4 sm:justify-items-start sm:border-t sm:border-gray-200 sm:pt-5">
                 
                         <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
