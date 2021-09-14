@@ -40,6 +40,7 @@ class Mixin:
     def create_event(
         self,
         description="I am a test event",
+        image="Users/admin/Desktop/Screenshot 2021-09-09 at 5.10.43 PM.png",
         place=None,
         category=None,
         user=None,
@@ -58,6 +59,7 @@ class Mixin:
         return Event.objects.create(
             name=event_name,
             description=description,
+            image=image,
             place=place,
             category=category,
             user=user,
@@ -99,3 +101,17 @@ class TestEventCreateView(TestCase, Mixin):
             },
         )
         self.assertEqual(Event.objects.last().name, "I am a test event")
+
+
+class TestEventListView(TestCase, Mixin):
+    def setUp(self):
+        self.event = self.create_event()
+
+    def test_page_serve_successful(self):
+        url = reverse("list_event")
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+
+    def test_url_resolve_event_list_object(self):
+        view = resolve("/events/")
+        self.assertEquals(view.func.view_class, views.EventListView)
