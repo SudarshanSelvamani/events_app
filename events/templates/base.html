@@ -6,6 +6,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body class = "bg-gray-100">
+        <div class = "bg-gray-800">
+            <h2 class="font-bold font-sans text-4xl space-y-6 text-white">
+              Events
+            </h2>
+            <div class = "flex justify-end space-x-3">
+              <a class="text-sm font-bold text-white object-left " href= "{% url 'create_event'%}">Create Event</a>
+              <a class="text-sm font-bold text-white object-left" href= "{% url 'list_event'%}">All events</a>
+          
+            </div>
+          </div>
         {% block content %}
         {% endblock content %}
 

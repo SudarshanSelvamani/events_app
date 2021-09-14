@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.views.generic.edit import CreateView
+from django.views.generic import CreateView, ListView
 
 from .forms import EventPlaceForm, EventCategoryForm, EventFormSet, EventForm
+from .models import Event
 
 
 class EventCreateView(CreateView):
@@ -59,3 +60,10 @@ def category_create_popup(request):
         )
     else:
         return render(request, "events/create_category.html", {"form": form})
+
+
+class EventListView(ListView):
+    model = Event
+    template_name = "events/list_view.html"
+    context_object_name = "events"
+    paginate_by = 10
