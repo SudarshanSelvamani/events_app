@@ -14,28 +14,12 @@ from . import views
 
 
 class Mixin:
-    def create_event(
-        self,
-        description,
-        place,
-        category,
-        user,
-        event_name="Deployment",
-    ):
-        return Event.objects.create(
-            name=event_name,
-            description=description,
-            place=place,
-            category=category,
-            user=user,
-        )
-
-    def create_place(self, venue, address, is_online):
+    def create_place(self, venue="lollipop", address="pisa", is_online=False):
         return Location.objects.create(
             venue=venue, address=address, is_online=is_online
         )
 
-    def create_category(self, category_name):
+    def create_category(self, category_name="funny"):
         return Category.objects.create(category=category_name)
 
     def create_event_time(
@@ -51,6 +35,32 @@ class Mixin:
     def create_user(self, username="johndoe", email="john@doe.com", password="1234"):
         return User.objects.create_user(
             username=username, email=email, password=password
+        )
+
+    def create_event(
+        self,
+        description="I am a test event",
+        place=None,
+        category=None,
+        user=None,
+        event_name="Deployment",
+    ):
+
+        if place == None:
+            place = self.create_place()
+
+        if category == None:
+            category = self.create_category()
+
+        if user == None:
+            user = self.create_user()
+
+        return Event.objects.create(
+            name=event_name,
+            description=description,
+            place=place,
+            category=category,
+            user=user,
         )
 
 
@@ -76,10 +86,8 @@ class TestEventCreateView(TestCase, Mixin):
         self.assertIsInstance(form, EventForm)
 
     def test_event_save(self):
-        event_place = self.create_place(
-            venue="lollipop", address="Eeifel tower", is_online=False
-        )
-        category = self.create_category(category_name="funny")
+        event_place = self.create_place()
+        category = self.create_category()
 
         self.client.post(
             "/events/create",
