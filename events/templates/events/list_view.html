@@ -4,6 +4,16 @@
 {% load myfilters %}
 {% load static %}
 
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <div class="bg-indigo-700" role="alert">
+                <li>{{ message }}</li>
+            </div>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 
 <form method = "GET" novalidate autocomplete="off">
 <div class="grid grid-flow-col space-x-3">
