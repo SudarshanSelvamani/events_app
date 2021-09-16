@@ -49,5 +49,5 @@ class EventCategoryForm(forms.ModelForm):
 
 
 EventFormSet = inlineformset_factory(
-    Event, Time, form=EventTimeForm, extra=1, can_delete=False
+    Event, Time, form=EventTimeForm, extra=1, can_delete=True
 )

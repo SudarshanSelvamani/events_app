@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.views.generic import CreateView, ListView, DetailView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.urls import reverse
 
 from .forms import EventPlaceForm, EventCategoryForm, EventFormSet, EventForm
 from .models import Event, Time
@@ -83,3 +84,36 @@ class EventDetailView(DetailView):
         timings = Time.objects.filter(event=self.kwargs.get("pk"))
         context["timings"] = timings
         return context
+
+
+class EventUpdateView(UpdateView):
+    form_class = EventForm
+    model = Event
+    template_name = "events/create_event.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(EventUpdateView, self).get_context_data(**kwargs)
+        context["event_formset"] = EventFormSet(instance=self.object)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+
+        event_formset = EventFormSet(
+            self.request.POST, self.request.FILES, instance=form.instance
+        )
+        if form.is_valid() and event_formset.is_valid():
+            return self.form_valid(form, event_formset)
+        else:
+            return self.form_invalid(form, event_formset)
+
+    def form_valid(self, form, event_formset):
+        form.save()
+        event_times = event_formset.save()
+        return redirect(reverse("list_event"))
+
+    def form_invalid(self, form, event_formset):
+        return self.render_to_response(
+            self.get_context_data(form=form, event_formset=event_formset)
+        )
