@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, DetailView
 
 from .forms import EventPlaceForm, EventCategoryForm, EventFormSet, EventForm
-from .models import Event
+from .models import Event, Time
 from .filters import EventFilter
 
 
@@ -71,4 +71,15 @@ class EventListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["filter"] = EventFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+
+
+class EventDetailView(DetailView):
+    model = Event
+    template_name = "events/detail_view.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        timings = Time.objects.filter(event=self.kwargs.get("pk"))
+        context["timings"] = timings
         return context
