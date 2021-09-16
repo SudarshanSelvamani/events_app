@@ -24,11 +24,14 @@ class Mixin:
 
     def create_event_time(
         self,
-        end_time_object,
-        is_event_all_day,
-        event,
+        event=None,
+        end_time_object=datetime.datetime.now(),
+        is_event_all_day=False,
         start_time_object=datetime.datetime.now(),
     ):
+        if event == None:
+            event = self.create_event()
+
         return Time.objects.create(
             start=start_time_object,
             end=end_time_object,
