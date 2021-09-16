@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from django.urls import reverse, resolve
 from django.contrib.auth.models import User
 
-from datetime import timedelta
+import datetime
 
 from .models import Event, Location, Time, Category
 from .forms import EventForm
@@ -23,7 +23,11 @@ class Mixin:
         return Category.objects.create(category=category_name)
 
     def create_event_time(
-        self, start_time_object, end_time_object, is_event_all_day, event
+        self,
+        end_time_object,
+        is_event_all_day,
+        event,
+        start_time_object=datetime.datetime.now(),
     ):
         return Time.objects.create(
             start=start_time_object,
