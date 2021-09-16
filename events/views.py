@@ -4,6 +4,7 @@ from django.views.generic import CreateView, ListView
 
 from .forms import EventPlaceForm, EventCategoryForm, EventFormSet, EventForm
 from .models import Event
+from .filters import EventFilter
 
 
 class EventCreateView(CreateView):
@@ -65,5 +66,9 @@ def category_create_popup(request):
 class EventListView(ListView):
     model = Event
     template_name = "events/list_view.html"
-    context_object_name = "events"
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["filter"] = EventFilter(self.request.GET, queryset=self.get_queryset())
+        return context
