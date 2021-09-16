@@ -181,3 +181,16 @@ class TestEventListView(TestCase, Mixin):
         )
         self.assertContains(response, event3)
         self.assertNotContains(response, self.event1)
+
+class TestEventDetailView(TestCase, Mixin):
+    def setUp(self):
+        self.event = self.create_event()
+
+    def test_page_serve_successful(self):
+        url = reverse("event_detail", args=[self.event.pk])
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+
+    def test_url_resolve_event_detail_object(self):
+        view = resolve(f"/events/{self.event.pk}/detail")
+        self.assertEquals(view.func.view_class, views.EventDetailView)
