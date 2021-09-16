@@ -1,3 +1,4 @@
+from django.http import response
 from django.test import TestCase
 from django.utils.timezone import now
 from django.urls import reverse, resolve
@@ -112,7 +113,26 @@ class TestEventCreateView(TestCase, Mixin):
 
 class TestEventListView(TestCase, Mixin):
     def setUp(self):
-        self.event = self.create_event()
+        user1 = self.create_user(username="John", email="kk@123.com")
+        user2 = self.create_user(username="Joe", email="kk@121.com")
+        self.event1 = self.create_event(event_name="Buddy", user=user1)
+        self.event1_time1 = self.create_event_time(
+            start_time_object=datetime.datetime(2021, 9, 3),
+            event=self.event1,
+        )
+        self.event1_time2 = self.create_event_time(
+            start_time_object=datetime.datetime(2021, 9, 5),
+            event=self.event1,
+        )
+        self.event2 = self.create_event(event_name="laugh", user=user2)
+        self.event2_time1 = self.create_event_time(
+            start_time_object=datetime.datetime(2021, 9, 7),
+            event=self.event2,
+        )
+        self.event2_time2 = self.create_event_time(
+            start_time_object=datetime.datetime(2021, 9, 8),
+            event=self.event2,
+        )
 
     def test_page_serve_successful(self):
         url = reverse("list_event")
@@ -122,3 +142,42 @@ class TestEventListView(TestCase, Mixin):
     def test_url_resolve_event_list_object(self):
         view = resolve("/events/")
         self.assertEquals(view.func.view_class, views.EventListView)
+
+    def test_search_results(self):
+        name_search_string = "bu"
+        response = self.client.get(
+            f"/events/?place=&category=&start_from_to_time_after=&start_from_to_time_before=&name={search_string}"
+        )
+        self.assertContains(response, self.event1)
+
+    def test_category_filter_results(self):
+        event_category = self.event2.category.id
+        response = self.client.get(
+            f"/events/?place=&category={event_category}&start_from_to_time_after=&start_from_to_time_before=&name="
+        )
+        self.assertContains(response, self.event2)
+
+    def test_place_filter_results(self):
+        event_place_id = self.event1.place.id
+        response = self.client.get(
+            f"/events/?place={event_place_id}&category=&start_from_to_time_after=&start_from_to_time_before=&name="
+        )
+        self.assertContains(response, self.event1)
+
+    def test_date_range_filter_results(self):
+        user = self.create_user()
+        event3 = self.create_event(event_name="funny", user=user)
+        self.create_event_time(
+            start_time_object=datetime.datetime(2021, 9, 10),
+            event=event3,
+        )
+        self.create_event_time(
+            start_time_object=datetime.datetime(2021, 9, 11),
+            event=event3,
+        )
+        date_search_string = "2021-09-9"
+        response = self.client.get(
+            f"/events/?place=&category=&start_from_to_time_after={date_search_string}&start_from_to_time_before=&name="
+        )
+        self.assertContains(response, event3)
+        self.assertNotContains(response, self.event1)

@@ -2,16 +2,53 @@
 
 {% block content %}
 {% load myfilters %}
-{% load static %} 
+{% load static %}
 
+
+<form method = "GET" novalidate autocomplete="off">
 <div class="grid grid-flow-col space-x-3">
-<div class = "bg-gray-800 p-4">
-
-</div> 
-
+<div class = "bg-gray-800 p-4 space-y-3">
+          <div class = "space-y-6">
+            <label class="block text-sm font-medium text-white object-left">Location:</label>
+            {{filter.form.place|addclass:"mt-1 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"}}
+          </div>
+          <div class = "space-y-4">
+            <label class="block text-sm font-medium text-white object-left">Category:</label>
+            {{filter.form.category|addclass:"mt-1 pl-3 pr-10 py-2 w-full text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"}}
+          </div>
+              <div>
+                <label class="text-sm font-medium text-white">Sort by date range:</label>
+                <div class = "hidden">
+                  {{filter.form.start_from_to_time|addclass:"focus:ring-indigo-500 focus:border-indigo-500 w-half shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"}}
+                </div>
+                <div>
+                  <input type="text" id="date-picker" class="py-0 px-2 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                </div>
+            </div>
+            <div>
+          </div>
+            <div class="pt-5">
+                <div class="flex justify-center">
+                  <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" id="clear-filters">
+                    Clear all
+                  </button>
+                  <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" value="Save">
+                    Search
+                  </button>
+                </div>
+              </div>
+        </form>
+</div>    
   <div>
+    <div class = "flex justify-end p-2">
+      <label class="text-sm font-bold text-gray-800 object-left">Search:</label>
+      {{ filter.form.name|addclass:"shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md" }}
+    </div> 
+  </form>
+
     <div class="grid grid-cols-3 grid-rows-3 gap-x-3.5">
-            {% for event in events %}
+
+            {% for event in filter.qs %}
             <div class="rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-indigo-500 overflow-hidden">
                     {% if event.image %}
                         <img src="{{event.image.url}}" class = "object-cover pointer-events-none group-hover:opacity-75">
@@ -51,5 +88,15 @@
         </ul>
       {% endif %}
 </div>
+
+  </div>
+</div>
+
+<head>
+<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/nocss/litepicker.js"></script>
+<script src="{% static 'events/date_picker.js' %}"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css"/>
+</head>
+
 
 {% endblock content %}
