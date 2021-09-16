@@ -146,7 +146,7 @@ class TestEventListView(TestCase, Mixin):
     def test_search_results(self):
         name_search_string = "bu"
         response = self.client.get(
-            f"/events/?place=&category=&start_from_to_time_after=&start_from_to_time_before=&name={search_string}"
+            f"/events/?place=&category=&start_from_to_time_after=&start_from_to_time_before=&name={name_search_string}"
         )
         self.assertContains(response, self.event1)
 
