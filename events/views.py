@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.views.generic import CreateView, ListView, DetailView
+from django.views.generic import CreateView, ListView, DetailView, DeleteView
+from django.urls import reverse_lazy, reverse
+from django.contrib import messages
+
 
 from .forms import EventPlaceForm, EventCategoryForm, EventFormSet, EventForm
 from .models import Event, Time
@@ -83,3 +86,13 @@ class EventDetailView(DetailView):
         timings = Time.objects.filter(event=self.kwargs.get("pk"))
         context["timings"] = timings
         return context
+
+
+class EventDeleteView(DeleteView):
+    model = Event
+    template_name = "events/delete_event.html"
+    context_object_name = "event"
+
+    def get_success_url(self):
+        messages.success(self.request, "Event was deleted successfully.")
+        return reverse("list_event")

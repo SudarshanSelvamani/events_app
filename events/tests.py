@@ -182,6 +182,7 @@ class TestEventListView(TestCase, Mixin):
         self.assertContains(response, event3)
         self.assertNotContains(response, self.event1)
 
+
 class TestEventDetailView(TestCase, Mixin):
     def setUp(self):
         self.event = self.create_event()
@@ -194,3 +195,23 @@ class TestEventDetailView(TestCase, Mixin):
     def test_url_resolve_event_detail_object(self):
         view = resolve(f"/events/{self.event.pk}/detail")
         self.assertEquals(view.func.view_class, views.EventDetailView)
+
+
+class TestEventDeleteView(TestCase, Mixin):
+    def setUp(self):
+        self.event = self.create_event()
+
+    def test_page_serve_successful(self):
+        url = reverse("delete_event", kwargs={"pk": self.event.pk})
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+
+    def test_url_resolve_event_delete_object(self):
+        event_pk = self.event.pk
+        view = resolve(f"/events/{event_pk}/delete")
+        self.assertEquals(view.func.view_class, views.EventDeleteView)
+
+    def test_presence_of_csrf(self):
+        url = reverse("delete_event", args=[self.event.pk])
+        response = self.client.get(url)
+        self.assertContains(response, "csrfmiddlewaretoken")
