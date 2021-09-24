@@ -10,4 +10,7 @@ urlpatterns = [
     path(
         "events/<str:pk>/detail", views.EventDetailView.as_view(), name="event_detail"
     ),
+    path(
+        "events/<str:pk>/update", views.EventUpdateView.as_view(), name="update_event"
+    ),
 ]

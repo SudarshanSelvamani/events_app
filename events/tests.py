@@ -182,6 +182,7 @@ class TestEventListView(TestCase, Mixin):
         self.assertContains(response, event3)
         self.assertNotContains(response, self.event1)
 
+
 class TestEventDetailView(TestCase, Mixin):
     def setUp(self):
         self.event = self.create_event()
@@ -194,3 +195,53 @@ class TestEventDetailView(TestCase, Mixin):
     def test_url_resolve_event_detail_object(self):
         view = resolve(f"/events/{self.event.pk}/detail")
         self.assertEquals(view.func.view_class, views.EventDetailView)
+
+
+class TestEventUpdateView(TestCase, Mixin):
+    def setUp(self):
+        self.event = self.create_event(event_name="Update test")
+
+    def test_page_serve_successful(self):
+        url = reverse("update_event", args=[self.event.pk])
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+
+    def test_url_resolve_event_update_object(self):
+        event_pk = self.event.pk
+        view = resolve(f"/events/{event_pk}/update")
+        self.assertEquals(view.func.view_class, views.EventUpdateView)
+
+    def test_presence_of_csrf(self):
+        url = reverse("update_event", args=[self.event.pk])
+        response = self.client.get(url)
+        self.assertContains(response, "csrfmiddlewaretoken")
+
+    def test_response_contains_eventform_object(self):
+        url = reverse("update_event", args=[self.event.pk])
+        response = self.client.get(url)
+        form = response.context.get("form")
+        self.assertIsInstance(form, EventForm)
+
+    def test_delete_event_formset_object(self):
+        response = self.client.post(
+            reverse("update_event", args=[self.event.pk]),
+            {
+                "name": "Update test success",
+                "description": "Testing should be done right",
+                "photo": "/Users/admin/Desktop/Screenshot 2021-09-14 at 8.08.43 AM.png",
+                "place": self.event.place.id,
+                "category": self.event.category.id,
+                "time_set-TOTAL_FORMS": "1",
+                "time_set-INITIAL_FORMS": "1",
+                "time_set-MIN_NUM_FORMS": "1",
+                "time_set-MAX_NUM_FORMS": "100",
+                "time_set-0-start": datetime.datetime.now(),
+                "time_set-0-end": datetime.datetime(2021, 9, 27),
+                "time_set-0-all_day": False,
+                "time_set-0-DELETE": True,
+                "time_set-0-event": self.event.id,
+            },
+        )
+
+        self.event.refresh_from_db()
+        self.assertEqual(self.event.name, "Update test success")
